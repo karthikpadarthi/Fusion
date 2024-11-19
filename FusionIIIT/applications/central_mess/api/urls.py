@@ -28,4 +28,6 @@ urlpatterns = [
     url('deRegistrationRequestApi', views.DeregistrationRequestApi.as_view(), name='deRegistrationRequestApi'),
     url('deRegistrationApi', views.DeregistrationApi.as_view(), name='deRegistrationApi'),
     url('updatePaymentRequestApi', views.UpdatePaymentRequestApi.as_view(), name='updatePaymentRequestApi'),
+    url('update-bill-excel/', UpdateBillExcelAPI.as_view(), name='update_bill_excel_api'),
+
 ]
