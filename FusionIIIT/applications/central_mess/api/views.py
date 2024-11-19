@@ -148,15 +148,12 @@ class MessBillBaseApi(APIView):
         return Response({'status':200})      
 
 class Monthly_billApi(APIView):
-<<<<<<< HEAD
-=======
     def get(self, request):
         
         monthly_bill_obj = Monthly_bill.objects.all();
         serialized_obj = Monthly_billSerializer(monthly_bill_obj, many=True)
         return Response({'status':200, 'payload':serialized_obj.data})    
 
->>>>>>> 558062591394f9dc01d94a23efa42cd36641af76
     def post(self, request):
         try:
             data = request.data
