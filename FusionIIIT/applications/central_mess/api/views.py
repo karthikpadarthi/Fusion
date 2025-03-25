@@ -941,3 +941,52 @@ class Get_Mess_Balance_Status(APIView):
             current_mess_status = 'Deregistered'
 
         return Response({'payload': {'mess_option': mess_optn.mess_option, 'current_rem_balance': current_rem_balance, 'current_mess_status': current_mess_status}})
+
+class CronDailyDeductionAPI(APIView):
+    def post(self, request):
+        daily_charge = 104
+        date= datetime.datetime.now()
+        today = date.today()
+
+        registered_students = Reg_main.objects.filter(current_mess_status="Registered")
+
+        for reg in registered_students:
+            student = reg.student_id
+            student_id = student.id
+
+            has_rebate_today = Rebate.objects.filter(
+                student_id=student_id,
+                start_date__lte=today,
+                end_date__gte=today,
+                status='2'
+            ).exists()
+
+            if not has_rebate_today:
+                current_month = today.month
+                current_year = today.year
+                try:
+                    bill = Monthly_bill.objects.get(
+                        student_id=student_id,
+                        month=current_month,
+                        year=current_year
+                    )
+                    bill.amount = F('amount') + daily_charge
+                    bill.total_bill = F('total_bill') + daily_charge
+                    bill.save()
+                except Monthly_bill.DoesNotExist:
+                    Monthly_bill.objects.create(
+                        student_id=student,
+                        month=current_month,
+                        year=current_year,
+                        amount=daily_charge,
+                        rebate_count=0,
+                        rebate_amount=0,
+                        total_bill=daily_charge,
+                        paid=False
+                    )
+        return Response(
+            {
+                'status': 200,
+                'message': 'Daily deduction process completed successfully.'
+            }
+        )
